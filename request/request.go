@@ -7,9 +7,11 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type RequestSchema struct {
+	Header      map[string]interface{} `json:"header"`
 	RequestType string                 `json:"type"`
 	Url         string                 `json:"url"`
 	Payload     map[string]interface{} `json:"payload"`
@@ -25,6 +27,7 @@ func (r *RequestSchema) MakeRequest() error {
 	if err != nil {
 		return err
 	}
+	handleHeader(req, r.Header)
 
 	err = handleQuery(req, r.Query)
 	if err != nil {
@@ -62,6 +65,13 @@ func handleQuery(req *http.Request, query map[string]interface{}) error {
 	// Set the encoded query string on the request URL
 	req.URL.RawQuery = q.Encode()
 	return nil
+}
+
+func handleHeader(req *http.Request, header map[string]interface{}) {
+	for key, value := range header {
+		req.Header.Add(key, toString(value))
+	}
+	req.Header.Add("Task-Queue-Request", time.Now().Format(time.RFC3339))
 }
 
 // Helper function to convert interface{} to string

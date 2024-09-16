@@ -28,5 +28,5 @@ func (qh *QueueHandler) AddQueue(c *gin.Context) {
 		c.AbortWithStatusJSON(400, fmt.Sprintf("unable to add request as %v", err))
 		return
 	}
-	c.Status(200)
+	c.SecureJSON(200, gin.H{"data": nil})
 }

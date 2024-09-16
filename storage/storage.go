@@ -1,8 +1,6 @@
 package storage
 
 import (
-	"errors"
-	"log"
 	"sync"
 
 	"github.com/kittanut/go-task-queue/request"
@@ -36,19 +34,15 @@ func (s *DefaultStorage) Fetch() error {
 	s.mux.Lock()         // acquire the lock
 	defer s.mux.Unlock() // ensure the lock is released after the operation
 
-	// Check if the queue is empty
-	if len(s.queue) == 0 {
-		return errors.New("queue is empty")
-	}
-
 	// Get the first request in the queue and perform request
 	req := s.queue[0]
 	err := req.MakeRequest()
-	if err != nil {
-		log.Println(req.Url)
-	}
 
 	// Remove the first request from the queue
 	s.queue = s.queue[1:]
 	return err
+}
+
+func (s *DefaultStorage) IsEmpty() bool {
+	return len(s.queue) == 0
 }

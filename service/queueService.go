@@ -45,19 +45,18 @@ func (q *QueueService) ProcessNewQueue(req request.RequestSchema) error {
 
 // ManageQueue continuously fetches and processes requests from the queue
 func (q *QueueService) ManageQueue() {
-	log.Println("Queue manager started")
-
 	for {
 		select {
 		case <-q.stop:
 			log.Println("Stopping queue management")
 			return
 		default:
-			// Fetch and process the next request in the queue
-			if err := q.storage.Fetch(); err != nil {
-				log.Println(err)
-				time.Sleep(2 * time.Second) // Wait before checking again
+			if !q.storage.IsEmpty() {
+				if err := q.storage.Fetch(); err != nil {
+					log.Println(err)
+				}
 			}
+			time.Sleep(2 * time.Second) // Wait before checking again
 		}
 	}
 }

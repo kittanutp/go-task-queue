@@ -14,7 +14,6 @@
 
 # TODO
 - Authentication for queue
-- Authentication implement for request w auth
 - Graceful shutdown (wait for queue to empty before shutodown)
 - Auto Scaling on QueueManager
 - Unit Test
