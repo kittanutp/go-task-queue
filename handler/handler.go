@@ -4,4 +4,5 @@ import "github.com/gin-gonic/gin"
 
 type QueueHandlerInterface interface {
 	AddQueue(c *gin.Context)
+	CheckQueue(c *gin.Context)
 }

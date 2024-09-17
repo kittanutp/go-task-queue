@@ -55,8 +55,9 @@ func (q *QueueService) ManageQueue() {
 				if err := q.storage.Fetch(); err != nil {
 					log.Println(err)
 				}
+			} else {
+				time.Sleep(2 * time.Second) // Wait before checking again
 			}
-			time.Sleep(2 * time.Second) // Wait before checking again
 		}
 	}
 }
@@ -77,4 +78,8 @@ func (q *QueueService) listenForShutdown() {
 	// Stop the queue manager gracefully
 	q.Stop()
 	log.Println("Queue service stopped")
+}
+
+func (q *QueueService) CheckEmptyQueue() bool {
+	return q.storage.IsEmpty()
 }

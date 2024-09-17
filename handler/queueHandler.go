@@ -30,3 +30,7 @@ func (qh *QueueHandler) AddQueue(c *gin.Context) {
 	}
 	c.SecureJSON(200, gin.H{"data": nil})
 }
+
+func (qh *QueueHandler) CheckQueue(c *gin.Context) {
+	c.SecureJSON(200, gin.H{"is_queue_empty": qh.queueService.CheckEmptyQueue()})
+}

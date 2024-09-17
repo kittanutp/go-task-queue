@@ -10,21 +10,12 @@ import (
 type (
 	Config struct {
 		Server *server
-		Queue  *queue
 	}
 
 	server struct {
-		Port int
-	}
-
-	queue struct {
-		Host     string
-		Port     int
-		User     string
-		Password string
-		DBName   string
-		SSLMode  string
-		TimeZone string
+		Port            int
+		ServiceUsername string
+		ServicePassword string
 	}
 )
 

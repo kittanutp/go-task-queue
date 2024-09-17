@@ -13,7 +13,6 @@
     }
 
 # TODO
-- Authentication for queue
 - Graceful shutdown (wait for queue to empty before shutodown)
 - Auto Scaling on QueueManager
 - Unit Test

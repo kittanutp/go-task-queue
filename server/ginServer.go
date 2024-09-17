@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -67,28 +68,31 @@ func (g *ginServer) Start() {
 func (g *ginServer) initializeQueueHttpHandler() {
 	queueService := service.NewQueueService(g.storage)
 	queuehandler := handler.NewQueueHTTPHandler(queueService)
-	queueRoutes := g.app.Group("/queue")
+	queueRoutes := g.app.Group("/queue", gin.BasicAuth(gin.Accounts{
+		g.config.Server.ServiceUsername: g.config.Server.ServicePassword,
+	}))
 	{
 		queueRoutes.POST("new", queuehandler.AddQueue)
+		queueRoutes.GET("check", queuehandler.CheckQueue)
 
 	}
 
 }
 
 func (g *ginServer) handleShutdown(server *http.Server) {
+	// Create a channel to listen for interrupt signals
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-	<-quit // Block until we receive a signal
+	// Block until an OS signal is received
+	<-quit
 	log.Println("Shutting down server...")
 
 	// Create a context with a timeout for the shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Stop the queue service gracefully
-
-	// Shutdown the HTTP server
+	// Attempt to gracefully shutdown the HTTP server
 	if err := server.Shutdown(ctx); err != nil {
 		log.Fatalf("Server forced to shutdown: %v", err)
 	}

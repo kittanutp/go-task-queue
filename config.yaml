@@ -1,2 +1,4 @@
 server:
   port: 9001
+  serviceUsername: "dev_test"
+  servicePassword: "Jb+Y=UW_NT6O2a9weH(j"

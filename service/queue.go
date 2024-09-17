@@ -6,4 +6,5 @@ type QueueServiceInterface interface {
 	ProcessNewQueue(request request.RequestSchema) error
 	ManageQueue()
 	Stop()
+	CheckEmptyQueue() bool
 }
