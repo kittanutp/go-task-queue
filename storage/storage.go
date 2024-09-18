@@ -1,21 +1,24 @@
 package storage
 
 import (
+	"os"
 	"sync"
 
 	"github.com/kittanut/go-task-queue/request"
 )
 
 type DefaultStorage struct {
-	queue []request.RequestSchema
-	mux   sync.Mutex
+	queue    []request.RequestSchema
+	mux      sync.Mutex
+	occupied chan os.Signal
 }
 
 // NewStorage creates a new instance of Storage
 func NewStorage() StorageInterface {
 	return &DefaultStorage{
-		queue: make([]request.RequestSchema, 0), // initialize an empty slice for the queue
-		mux:   sync.Mutex{},                     // initialize a mutex for thread safety
+		queue:    make([]request.RequestSchema, 0), // initialize an empty slice for the queue
+		mux:      sync.Mutex{},
+		occupied: make(chan os.Signal), // initialize a mutex for thread safety
 	}
 }
 
@@ -45,4 +48,8 @@ func (s *DefaultStorage) Fetch() error {
 
 func (s *DefaultStorage) IsEmpty() bool {
 	return len(s.queue) == 0
+}
+
+func (s *DefaultStorage) QueueOccupied() chan os.Signal {
+	return s.occupied
 }

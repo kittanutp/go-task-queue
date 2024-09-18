@@ -78,6 +78,7 @@ func (q *QueueService) listenForShutdown() {
 	// Stop the queue manager gracefully
 	q.Stop()
 	log.Println("Queue service stopped")
+	close(q.storage.QueueOccupied())
 }
 
 func (q *QueueService) CheckEmptyQueue() bool {

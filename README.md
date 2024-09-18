@@ -10,10 +10,10 @@
     "url":"//URL_PATH//,
     "payload": {},
     "query": {},
+    "header": {}
     }
 
 # TODO
-- Graceful shutdown (wait for queue to empty before shutodown)
 - Auto Scaling on QueueManager
 - Unit Test
 - DDOS Prevention

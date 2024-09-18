@@ -92,10 +92,27 @@ func (g *ginServer) handleShutdown(server *http.Server) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// Listen for a second terminate signal in a separate goroutine
+	forceQuit := make(chan os.Signal, 1)
+	signal.Notify(forceQuit, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-forceQuit
+		log.Println("Force shutdown signal received. Shutting down immediately...")
+		forcedShutdown(server, context.Background())
+	}()
+
+	log.Println("Waiting to clear queue")
+	<-g.storage.QueueOccupied()
+
 	// Attempt to gracefully shutdown the HTTP server
+	forcedShutdown(server, ctx)
+
+	log.Println("Server gracefully stopped")
+}
+
+func forcedShutdown(server *http.Server, ctx context.Context) {
 	if err := server.Shutdown(ctx); err != nil {
 		log.Fatalf("Server forced to shutdown: %v", err)
 	}
 
-	log.Println("Server gracefully stopped")
 }
